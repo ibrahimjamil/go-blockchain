@@ -13,6 +13,7 @@ type Block struct {
 	Hash     []byte
 	Data     []byte
 	PrevHash []byte
+	Nonce    int
 }
 
 func (b *Block) DeriveHash() {
@@ -22,8 +23,18 @@ func (b *Block) DeriveHash() {
 }
 
 func CreateBlock(data string, prevHash []byte) *Block {
-	block := &Block{[]byte{}, []byte(data), prevHash}
-	block.DeriveHash()
+	// creating the block
+	block := &Block{[]byte{}, []byte(data), prevHash, 0}
+
+	// create new ProofOfWork Block with Target
+	pow := NewProof(block)
+
+	// running the algo to check proof of work block
+	nonce, hash := pow.Run()
+
+	block.Hash = hash[:]
+	block.Nonce = nonce
+
 	return block
 }
 
